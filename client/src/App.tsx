@@ -5,6 +5,8 @@ import CategoryPage from "./pages/dashboard/CategoryPage";
 import AdminLayout from "./layouts/AdminLayout"
 import type { JSX } from "@emotion/react/jsx-runtime";
 import ProductsPage from "./pages/dashboard/ProductsPage";
+import HomePage from "./pages/Home/HomePage";
+
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const user = localStorage.getItem("user");
@@ -18,7 +20,7 @@ export default function App() {
         {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
+        <Route path="/home" element={<HomePage />} />
         {/* Dashboard có bảo vệ */}
         <Route
           path="/"

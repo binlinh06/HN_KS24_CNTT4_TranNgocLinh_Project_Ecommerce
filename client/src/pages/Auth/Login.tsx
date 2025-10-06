@@ -28,7 +28,7 @@ export default function Login() {
 
     try {
       const res = await axios.get(
-        `http://localhost:5000/users?email=${email}&password=${password}`
+        `http://localhost:8080/users?email=${email}&password=${password}`
       );
       if (res.data.length > 0) {
         const user = res.data[0];
