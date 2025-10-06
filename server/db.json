@@ -22,5 +22,55 @@
       "role": "user",
       "id": 3
     }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "code": "DM001",
+      "name": "Quần áo",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "code": "DM002",
+      "name": "Kính mắt",
+      "status": "inactive"
+    },
+    {
+      "id": 3,
+      "code": "DM003",
+      "name": "Giày dép",
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "code": "DM004",
+      "name": "Thời trang nam",
+      "status": "inactive"
+    },
+    {
+      "id": 5,
+      "code": "DM005",
+      "name": "Thời trang nữ",
+      "status": "inactive"
+    },
+    {
+      "id": 6,
+      "code": "DM006",
+      "name": "Hoa quả",
+      "status": "inactive"
+    },
+    {
+      "id": 7,
+      "code": "DM007",
+      "name": "Rau",
+      "status": "active"
+    },
+    {
+      "id": 8,
+      "code": "DM008",
+      "name": "Điện thoại",
+      "status": "inactive"
+    }
   ]
 }

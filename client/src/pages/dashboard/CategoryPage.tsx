@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   Button,
@@ -11,38 +11,47 @@ import {
   message,
   Radio,
 } from "antd";
-import {
-  PlusOutlined,
-  DeleteOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
+import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch } from "../../stores/stores";
+import {
+  addCategory,
+  getAllCategory,
+  updateCategory,
+  deleteCategory,
+} from "../../stores/slices/CategorySlice";
 
 const { Text } = Typography;
 const { Option } = Select;
 const { Search } = Input;
 
-const initialData = [
-  { code: "DM001", name: "Quần áo", status: "active" },
-  { code: "DM002", name: "Kính mắt", status: "inactive" },
-  { code: "DM003", name: "Giày dép", status: "active" },
-  { code: "DM004", name: "Thời trang nam", status: "inactive" },
-  { code: "DM005", name: "Thời trang nữ", status: "inactive" },
-  { code: "DM006", name: "Hoa quả", status: "inactive" },
-  { code: "DM007", name: "Rau", status: "active" },
-  { code: "DM008", name: "Điện thoại", status: "inactive" },
-];
-
 export default function CategoryPage() {
-  const [data, setData] = useState(initialData);
-  const [filteredData, setFilteredData] = useState(initialData);
-  const [statusFilter, setStatusFilter] = useState("all");
+  const dispatch = useDispatch<AppDispatch>();
+  const { categories, loading, error } = useSelector(
+    (state: any) => state.category
+  );
 
+  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [statusFilter, setStatusFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<any>(null);
   const [form] = Form.useForm();
 
-  // ✅ Biến xác định đang thêm hay sửa
-  const [editingCategory, setEditingCategory] = useState<any>(null);
+  // 🔹 Lấy dữ liệu khi load
+  useEffect(() => {
+    dispatch(getAllCategory());
+  }, [dispatch]);
+
+  // 🔹 Khi categories thay đổi → cập nhật bảng
+  useEffect(() => {
+    setFilteredData(categories);
+  }, [categories]);
+
+  // 🔹 Hiển thị lỗi nếu có
+  useEffect(() => {
+    if (error) message.error(error);
+  }, [error]);
 
   // ======== Cột bảng ========
   const columns = [
@@ -78,7 +87,12 @@ export default function CategoryPage() {
       title: <span className="text-gray-700">Chức năng</span>,
       render: (record: any) => (
         <Space>
-          <Button type="text" danger icon={<DeleteOutlined />} />
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.id)}
+          />
           <Button
             type="text"
             style={{ color: "#facc15" }}
@@ -94,27 +108,27 @@ export default function CategoryPage() {
   const handleStatusChange = (value: string) => {
     setStatusFilter(value);
     if (value === "all") {
-      setFilteredData(data);
+      setFilteredData(categories);
     } else {
-      setFilteredData(data.filter((d) => d.status === value));
+      setFilteredData(categories.filter((d: any) => d.status === value));
     }
   };
 
   // ======== Tìm kiếm ========
   const onSearch = (value: string) => {
-    const searchData = data.filter((d) =>
+    const searchData = categories.filter((d: any) =>
       d.name.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredData(
       statusFilter === "all"
         ? searchData
-        : searchData.filter((d) => d.status === statusFilter)
+        : searchData.filter((d: any) => d.status === statusFilter)
     );
   };
 
   // ======== Mở modal thêm ========
   const handleOpenAdd = () => {
-    setEditingCategory(null); // xóa dữ liệu cũ
+    setEditingCategory(null);
     form.resetFields();
     setIsModalOpen(true);
   };
@@ -122,39 +136,58 @@ export default function CategoryPage() {
   // ======== Mở modal sửa ========
   const handleEdit = (record: any) => {
     setEditingCategory(record);
-    form.setFieldsValue(record); // đổ dữ liệu vào form
+    form.setFieldsValue(record);
     setIsModalOpen(true);
   };
 
   // ======== Lưu (Thêm hoặc Cập nhật) ========
-  const handleSave = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        if (editingCategory) {
-          // Cập nhật
-          const updatedList = data.map((item) =>
-            item.code === editingCategory.code ? { ...item, ...values } : item
-          );
-          setData(updatedList);
-          setFilteredData(updatedList);
-          message.success("Cập nhật danh mục thành công!");
-        } else {
-          // Thêm mới
-          if (data.some((d) => d.code === values.code)) {
-            message.error("Mã danh mục đã tồn tại!");
-            return;
-          }
-          const updated = [...data, values];
-          setData(updated);
-          setFilteredData(updated);
-          message.success("Thêm danh mục thành công!");
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+
+      if (editingCategory) {
+        const updatedCategory = { ...editingCategory, ...values };
+
+        await dispatch(updateCategory(updatedCategory));
+        await dispatch(getAllCategory()); // refresh lại
+        message.success("Cập nhật danh mục thành công!");
+      } else {
+        // Thêm mới → Gọi API thật
+        if (filteredData.some((d) => d.code === values.code)) {
+          message.error("Mã danh mục đã tồn tại!");
+          return;
         }
-        setIsModalOpen(false);
-        form.resetFields();
-        setEditingCategory(null);
-      })
-      .catch(() => {});
+
+        await dispatch(addCategory(values)); // 🟢 GỌI API POST tới db.json
+        await dispatch(getAllCategory()); // 🔁 Refresh lại list
+        message.success("Thêm danh mục thành công!");
+      }
+
+      setIsModalOpen(false);
+      form.resetFields();
+      setEditingCategory(null);
+    } catch (err) {
+      console.error(err);
+      message.error("Lưu danh mục thất bại!");
+    }
+  };
+  const handleDelete = async (id: number) => {
+    Modal.confirm({
+      title: "Xác nhận xoá",
+      content: "Bạn có chắc muốn xoá danh mục này?",
+      okText: "Xoá",
+      cancelText: "Huỷ",
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          await dispatch(deleteCategory(id));
+          await dispatch(getAllCategory());
+          message.success("Xoá danh mục thành công!");
+        } catch (error) {
+          message.error("Xoá thất bại!");
+        }
+      },
+    });
   };
 
   return (
@@ -162,11 +195,7 @@ export default function CategoryPage() {
       {/* Hàng 1 */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Danh mục</h2>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleOpenAdd}
-        >
+        <Button type="primary" icon={<PlusOutlined />} onClick={handleOpenAdd}>
           Thêm mới danh mục
         </Button>
       </div>
@@ -195,6 +224,7 @@ export default function CategoryPage() {
       <Table
         columns={columns}
         dataSource={filteredData}
+        loading={loading}
         pagination={{ pageSize: 8, position: ["bottomCenter"] }}
         rowKey="code"
       />
@@ -221,7 +251,10 @@ export default function CategoryPage() {
             label="Mã danh mục"
             rules={[{ required: true, message: "Vui lòng nhập mã danh mục" }]}
           >
-            <Input placeholder="Nhập mã danh mục" disabled={!!editingCategory} />
+            <Input
+              placeholder="Nhập mã danh mục"
+              disabled={!!editingCategory}
+            />
           </Form.Item>
 
           <Form.Item
