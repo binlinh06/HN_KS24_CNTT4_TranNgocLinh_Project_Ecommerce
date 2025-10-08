@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SearchOutlined,
   ShoppingCartOutlined,
@@ -10,9 +10,63 @@ import {
   CustomerServiceOutlined,
   DesktopOutlined,
   ConsoleSqlOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 
 export default function Header() {
+  const banners = [
+    {
+      title: (
+        <>
+          IPhone 14 <span className="font-bold">Pro</span>
+        </>
+      ),
+      subtitle: "Đột phá công nghệ",
+      description: "Được tạo ra để thay đổi mọi thứ để tốt hơn. Cho tất cả mọi người.",
+      image:
+        "https://res.cloudinary.com/dcti4xpqa/image/upload/v1759764129/20ae4cc7d95ed194279d337796d951679b146d4a_tm2a7f.png",
+      bg: "#211C24",
+    },
+    {
+      title: (
+        <>
+          MacBook <span className="font-bold">Air M3</span>
+        </>
+      ),
+      subtitle: "Sức mạnh vượt trội",
+      description: "Hiệu năng cao, thời lượng pin ấn tượng, thiết kế sang trọng.",
+      image:
+        "https://res.cloudinary.com/dcti4xpqa/image/upload/v1759764429/product1_qzzmds.png",
+      bg: "#1E1B26",
+    },
+    {
+      title: (
+        <>
+          Galaxy <span className="font-bold">S24 Ultra</span>
+        </>
+      ),
+      subtitle: "Camera dẫn đầu xu hướng",
+      description: "Chụp đêm ấn tượng, quay phim chuyên nghiệp, hiệu năng vượt trội.",
+      image:
+        "https://res.cloudinary.com/dcti4xpqa/image/upload/v1759764771/s24ultra_mk1ltq.png",
+      bg: "#16202A",
+    },
+  ];
+
+  const [current, setCurrent] = useState(0);
+
+  // ✅ Tự động chuyển banner mỗi 3 giây
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % banners.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [banners.length]);
+
+  const nextSlide = () => setCurrent((prev) => (prev + 1) % banners.length);
+  const prevSlide = () => setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
+
   return (
     <header className="w-full bg-white shadow-sm">
       {/* Top Navigation */}
@@ -68,18 +122,21 @@ export default function Header() {
         </div>
       </div>
 
-      {/* ✅ Banner (đã căn đúng với header trên) */}
-      <div className="bg-[#211C24] text-white">
-        <div className="max-w-7xl mx-auto flex justify-between items-center py-20 px-6">
+      {/* ✅ Auto Banner Carousel */}
+      <div
+        className="relative overflow-hidden text-white transition-all duration-700"
+        style={{ backgroundColor: banners[current].bg }}
+      >
+        {/* Slide container */}
+        <div className="max-w-7xl mx-auto flex justify-between items-center py-20 px-6 transition-all duration-700">
           {/* Left Content */}
-          <div className="max-w-lg">
-            <p className="text-gray-400 mb-2">Đột phá công nghệ</p>
-            <h1 className="text-6xl font-light mb-4 leading-tight">
-              IPhone 14 <span className="font-bold">Pro</span>
-            </h1>
-            <p className="text-gray-400 mb-6">
-              Được tạo ra để thay đổi mọi thứ để tốt hơn. Cho tất cả mọi người
-            </p>
+          <div
+            key={current}
+            className="max-w-lg opacity-100 transition-opacity duration-700"
+          >
+            <p className="text-gray-400 mb-2">{banners[current].subtitle}</p>
+            <h1 className="text-6xl font-light mb-4 leading-tight">{banners[current].title}</h1>
+            <p className="text-gray-400 mb-6">{banners[current].description}</p>
             <button className="border border-white px-6 py-2 rounded-md hover:bg-white hover:text-black transition">
               Mua ngay
             </button>
@@ -88,11 +145,37 @@ export default function Header() {
           {/* Right Image */}
           <div className="flex-shrink-0">
             <img
-              src="https://res.cloudinary.com/dcti4xpqa/image/upload/v1759764129/20ae4cc7d95ed194279d337796d951679b146d4a_tm2a7f.png"
-              alt="Iphone"
-              className="w-[400px] object-contain h-80"
+              src={banners[current].image}
+              alt="banner"
+              className="w-[400px] object-contain h-80 transition-all duration-700"
             />
           </div>
+        </div>
+
+        {/* Nút chuyển tay */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 rounded-full hover:bg-black/50 transition"
+        >
+          <LeftOutlined className="text-white" />
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 rounded-full hover:bg-black/50 transition"
+        >
+          <RightOutlined className="text-white" />
+        </button>
+
+        {/* Dots indicator */}
+        <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {banners.map((_, idx) => (
+            <div
+              key={idx}
+              className={`w-3 h-3 rounded-full ${
+                current === idx ? "bg-white" : "bg-white/40"
+              }`}
+            />
+          ))}
         </div>
       </div>
     </header>
