@@ -10,14 +10,32 @@ export default function Footer() {
   return (
     <footer className="bg-black text-white mt-20">
       {/* Banner */}
-      <div className="bg-gradient-to-r from-[#1e1e1e] to-[#2b2b2b] py-20 flex flex-col items-center justify-center text-center">
-        <h2 className="text-6xl font-bold mb-4 tracking-wide">Ưu đãi mùa hè</h2>
-        <p className="text-[#787878] mb-8 text-base">
-          Nhanh tay săn đón các sản phẩm chất lượng
-        </p>
-        <button className="border border-white px-8 py-2 rounded-md text-base font-medium hover:bg-white hover:text-black transition-all duration-300">
-          Mua ngay
-        </button>
+      <div className="bg-gradient-to-r from-[#1e1e1e] to-[#2b2b2b] py-20 flex flex-row justify-between items-center text-center">
+        <div className="flex-shrink-0">
+          <img
+            src="https://res.cloudinary.com/dcti4xpqa/image/upload/v1759819052/jbl_jr_310bt_blue_1_gobm7n.png"
+            alt="Iphone"
+            className="w-[400px] object-contain h-80"
+          />
+        </div>
+        <div>
+          <h2 className="text-6xl font-bold mb-4 tracking-wide">
+            Ưu đãi mùa hè
+          </h2>
+          <p className="text-[#787878] mb-8 text-base">
+            Nhanh tay săn đón các sản phẩm chất lượng
+          </p>
+          <button className="border border-white px-8 py-2 rounded-md text-base font-medium hover:bg-white hover:text-black transition-all duration-300">
+            Mua ngay
+          </button>
+        </div>
+        <div className="flex-shrink-0">
+          <img
+            src="https://res.cloudinary.com/dcti4xpqa/image/upload/v1759818772/image_7_yaxcvq.png"
+            alt="Iphone"
+            className="w-[400px] object-contain h-80"
+          />
+        </div>
       </div>
 
       {/* Footer Content */}

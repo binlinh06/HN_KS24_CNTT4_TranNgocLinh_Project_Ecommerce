@@ -11,43 +11,56 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agree, setAgree] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    agree: "",
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+
+    // Reset lỗi
+    const newErrors = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      agree: "",
+    };
 
     // Validate cơ bản
-    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password || !confirmPassword) {
-      setError("Vui lòng điền đầy đủ thông tin");
-      return;
-    }
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setError("Email không hợp lệ");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Mật khẩu phải ít nhất 6 ký tự");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError("Mật khẩu xác nhận không khớp");
-      return;
-    }
-    if (!agree) {
-      setError("Bạn phải đồng ý với điều khoản");
+    if (!firstName.trim()) newErrors.firstName = "Vui lòng nhập họ và tên đệm";
+    if (!lastName.trim()) newErrors.lastName = "Vui lòng nhập tên";
+    if (!email.trim()) newErrors.email = "Vui lòng nhập email";
+    else if (!/^\S+@\S+\.\S+$/.test(email))
+      newErrors.email = "Email không hợp lệ";
+    if (!password) newErrors.password = "Vui lòng nhập mật khẩu";
+    else if (password.length < 8)
+      newErrors.password = "Mật khẩu phải ít nhất 8 ký tự";
+    if (!confirmPassword)
+      newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
+    else if (password !== confirmPassword)
+      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
+    if (!agree) newErrors.agree = "Bạn phải đồng ý với điều khoản";
+
+    // Nếu có lỗi, dừng lại
+    if (Object.values(newErrors).some((msg) => msg !== "")) {
+      setErrors(newErrors);
       return;
     }
 
     try {
-      // Kiểm tra email đã tồn tại chưa
       const res = await axios.get(`http://localhost:8080/users?email=${email}`);
       if (res.data.length > 0) {
-        setError("Email này đã được đăng ký");
+        setErrors((prev) => ({ ...prev, email: "Email này đã được đăng ký" }));
         return;
       }
 
-      // Tạo user mới
       await axios.post("http://localhost:8080/users", {
         firstName,
         lastName,
@@ -60,66 +73,95 @@ export default function Register() {
       navigate("/login");
     } catch (err) {
       console.error(err);
-      setError("Có lỗi xảy ra. Vui lòng thử lại");
+      alert("Có lỗi xảy ra. Vui lòng thử lại sau.");
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow">
-        <h2 className="mb-2 text-center text-2xl font-bold">Đăng ký tài khoản</h2>
-        <p className="mb-6 text-center text-gray-500">Đăng ký tài khoản để sử dụng dịch vụ</p>
+        <h2 className="mb-2 text-center text-2xl font-bold">
+          Đăng ký tài khoản
+        </h2>
+        <p className="mb-6 text-center text-gray-500">
+          Đăng ký tài khoản để sử dụng dịch vụ
+        </p>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="flex gap-4">
             <div className="w-1/2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Họ và tên đệm</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Họ và tên đệm
+              </label>
               <input
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 className="w-full rounded border px-3 py-2 focus:outline-blue-500"
               />
+              {errors.firstName && (
+                <p className="text-sm text-red-500">{errors.firstName}</p>
+              )}
             </div>
             <div className="w-1/2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tên</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tên
+              </label>
               <input
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 className="w-full rounded border px-3 py-2 focus:outline-blue-500"
               />
+              {errors.lastName && (
+                <p className="text-sm text-red-500">{errors.lastName}</p>
+              )}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded border px-3 py-2 focus:outline-blue-500"
             />
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Mật khẩu
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded border px-3 py-2 focus:outline-blue-500"
             />
+            {errors.password && (
+              <p className="text-sm text-red-500">{errors.password}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Xác nhận mật khẩu
+            </label>
             <input
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full rounded border px-3 py-2 focus:outline-blue-500"
             />
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+            )}
           </div>
 
           <label className="flex items-center space-x-2 text-sm">
@@ -136,8 +178,9 @@ export default function Register() {
               </a>
             </span>
           </label>
-
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {errors.agree && (
+            <p className="text-sm text-red-500">{errors.agree}</p>
+          )}
 
           <button
             type="submit"
