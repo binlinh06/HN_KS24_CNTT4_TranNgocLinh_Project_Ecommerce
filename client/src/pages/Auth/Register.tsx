@@ -35,6 +35,7 @@ export default function Register() {
 
     // Validate cơ bản
     if (!firstName.trim()) newErrors.firstName = "Vui lòng nhập họ và tên đệm";
+    else newErrors.firstName = ""
     if (!lastName.trim()) newErrors.lastName = "Vui lòng nhập tên";
     if (!email.trim()) newErrors.email = "Vui lòng nhập email";
     else if (!/^\S+@\S+\.\S+$/.test(email))

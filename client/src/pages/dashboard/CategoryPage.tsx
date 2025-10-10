@@ -91,7 +91,7 @@ export default function CategoryPage() {
             type="text"
             danger
             icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.id)}
+            onClick={() => handleDelete(record)}
           />
           <Button
             type="text"
@@ -171,30 +171,26 @@ export default function CategoryPage() {
       message.error("Lưu danh mục thất bại!");
     }
   };
-  const handleDelete = async (id: number) => {
-    Modal.confirm({
-      title: "Xác nhận xoá",
-      content: "Bạn có chắc muốn xoá danh mục này?",
-      okText: "Xoá",
-      cancelText: "Huỷ",
-      okButtonProps: { danger: true },
-      onOk: async () => {
-        try {
-          await dispatch(deleteCategory(id));
-          await dispatch(getAllCategory());
-          message.success("Xoá danh mục thành công!");
-        } catch (error) {
-          message.error("Xoá thất bại!");
-        }
-      },
-    });
-  };
+const handleDelete = async (id: number) => {
+  const confirmDelete = window.confirm("Bạn có chắc muốn xoá danh mục này?");
+  if (confirmDelete) {
+    try {
+      await dispatch(deleteCategory(id));
+      await dispatch(getAllCategory());
+      message.success("Xoá danh mục thành công!");
+    } catch (error) {
+      console.log(error);
+      message.error("Xoá thất bại!");
+    }
+  }
+};
+
 
   return (
     <>
       {/* Hàng 1 */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Danh mục</h2>
+        <h1 className="text-2xl font-bold">Danh mục</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleOpenAdd}>
           Thêm mới danh mục
         </Button>

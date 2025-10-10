@@ -10,7 +10,7 @@
       "firstName": "Linh",
       "lastName": "Linh",
       "email": "Linh@gmail.com",
-      "password": "123456",
+      "password": "12345678",
       "role": "user",
       "id": 2
     },
@@ -21,6 +21,14 @@
       "password": "123456",
       "role": "user",
       "id": 3
+    },
+    {
+      "firstName": "s",
+      "lastName": "s",
+      "email": "Linh5@gmail.com",
+      "password": "12345678",
+      "role": "user",
+      "id": 4
     }
   ],
   "categories": [

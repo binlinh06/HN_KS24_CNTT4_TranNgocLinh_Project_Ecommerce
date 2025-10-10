@@ -55,7 +55,7 @@ export default function AdminLayout() {
       <Layout>
         <Header className="!bg-white !h-16 flex justify-end items-center pr-5 gap-5 border-b border-b-gray-300">
           <NotificationsIcon className="text-gray-400" />
-          <Avatar src="https://i.pravatar.cc/300" />
+          <Avatar src="https://res.cloudinary.com/dcti4xpqa/image/upload/v1759127048/samples/animals/cat.jpg" />
         </Header>
 
         <Content className="m-4">

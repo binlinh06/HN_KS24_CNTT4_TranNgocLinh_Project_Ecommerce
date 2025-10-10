@@ -13,8 +13,70 @@ import {
   LeftOutlined,
   RightOutlined,
 } from "@ant-design/icons";
+import { Dropdown, Menu, message, Avatar } from "antd";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+
+  // ✅ Lấy user từ localStorage khi load trang
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  // ✅ Hàm đăng xuất
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    message.success("Đăng xuất thành công!");
+    navigate("/login");
+  };
+
+  // ✅ Hàm chuyển sang trang login
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
+  // ✅ Menu tùy theo trạng thái đăng nhập
+  const menu = (
+    <Menu
+      items={
+        user
+          ? [
+              {
+                key: "logout",
+                label: (
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left text-red-500 font-medium"
+                  >
+                    Đăng xuất
+                  </button>
+                ),
+              },
+            ]
+          : [
+              {
+                key: "login",
+                label: (
+                  <button
+                    onClick={handleLogin}
+                    className="w-full text-left text-blue-500 font-medium"
+                  >
+                    Đăng nhập
+                  </button>
+                ),
+              },
+            ]
+      }
+    />
+  );
+
+  // --- Banners ---
   const banners = [
     {
       title: (
@@ -23,7 +85,8 @@ export default function Header() {
         </>
       ),
       subtitle: "Đột phá công nghệ",
-      description: "Được tạo ra để thay đổi mọi thứ để tốt hơn. Cho tất cả mọi người.",
+      description:
+        "Được tạo ra để thay đổi mọi thứ để tốt hơn. Cho tất cả mọi người.",
       image:
         "https://res.cloudinary.com/dcti4xpqa/image/upload/v1759764129/20ae4cc7d95ed194279d337796d951679b146d4a_tm2a7f.png",
       bg: "#211C24",
@@ -35,7 +98,8 @@ export default function Header() {
         </>
       ),
       subtitle: "Sức mạnh vượt trội",
-      description: "Hiệu năng cao, thời lượng pin ấn tượng, thiết kế sang trọng.",
+      description:
+        "Hiệu năng cao, thời lượng pin ấn tượng, thiết kế sang trọng.",
       image:
         "https://res.cloudinary.com/dcti4xpqa/image/upload/v1759764429/product1_qzzmds.png",
       bg: "#1E1B26",
@@ -47,7 +111,8 @@ export default function Header() {
         </>
       ),
       subtitle: "Camera dẫn đầu xu hướng",
-      description: "Chụp đêm ấn tượng, quay phim chuyên nghiệp, hiệu năng vượt trội.",
+      description:
+        "Chụp đêm ấn tượng, quay phim chuyên nghiệp, hiệu năng vượt trội.",
       image:
         "https://res.cloudinary.com/dcti4xpqa/image/upload/v1759764771/s24ultra_mk1ltq.png",
       bg: "#16202A",
@@ -56,7 +121,7 @@ export default function Header() {
 
   const [current, setCurrent] = useState(0);
 
-  // ✅ Tự động chuyển banner mỗi 3 giây
+  // ✅ Auto đổi banner mỗi 3 giây
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % banners.length);
@@ -65,7 +130,8 @@ export default function Header() {
   }, [banners.length]);
 
   const nextSlide = () => setCurrent((prev) => (prev + 1) % banners.length);
-  const prevSlide = () => setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
+  const prevSlide = () =>
+    setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
 
   return (
     <header className="w-full bg-white shadow-sm">
@@ -96,46 +162,49 @@ export default function Header() {
           <a href="#">Liên hệ</a>
           <HeartOutlined />
           <ShoppingCartOutlined />
-          <UserOutlined />
+
+          {/* ✅ Avatar + Menu động */}
+          <Dropdown overlay={menu} placement="bottomRight" trigger={["click"]}>
+            <Avatar
+              icon={<UserOutlined />}
+              className="cursor-pointer hover:bg-gray-200 transition"
+            />
+          </Dropdown>
         </nav>
       </div>
 
       {/* Submenu */}
       <div className="bg-[#2E2E2E] text-white text-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          {[
-            { icon: <MobileOutlined />, text: "Điện thoại" },
+          {[{ icon: <MobileOutlined />, text: "Điện thoại" },
             { icon: <LaptopOutlined />, text: "Laptop" },
             { icon: <DesktopOutlined />, text: "Đồng hồ thông minh" },
             { icon: <CameraOutlined />, text: "Cameras" },
             { icon: <CustomerServiceOutlined />, text: "Tai nghe" },
-            { icon: <ConsoleSqlOutlined />, text: "Gaming" },
-          ].map((item, index) => (
-            <div
-              key={index}
-              className="flex items-center px-5 py-2 space-x-2 hover:bg-gray-700 cursor-pointer transition"
-            >
-              {item.icon}
-              <span>{item.text}</span>
-            </div>
+            { icon: <ConsoleSqlOutlined />, text: "Gaming" }].map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center px-5 py-2 space-x-2 hover:bg-gray-700 cursor-pointer transition"
+              >
+                {item.icon}
+                <span>{item.text}</span>
+              </div>
           ))}
         </div>
       </div>
 
-      {/* ✅ Auto Banner Carousel */}
+      {/* ✅ Banner Carousel */}
       <div
         className="relative overflow-hidden text-white transition-all duration-700"
         style={{ backgroundColor: banners[current].bg }}
       >
-        {/* Slide container */}
         <div className="max-w-7xl mx-auto flex justify-between items-center py-20 px-6 transition-all duration-700">
           {/* Left Content */}
-          <div
-            key={current}
-            className="max-w-lg opacity-100 transition-opacity duration-700"
-          >
+          <div key={current} className="max-w-lg transition-opacity duration-700">
             <p className="text-gray-400 mb-2">{banners[current].subtitle}</p>
-            <h1 className="text-6xl font-light mb-4 leading-tight">{banners[current].title}</h1>
+            <h1 className="text-6xl font-light mb-4 leading-tight">
+              {banners[current].title}
+            </h1>
             <p className="text-gray-400 mb-6">{banners[current].description}</p>
             <button className="border border-white px-6 py-2 rounded-md hover:bg-white hover:text-black transition">
               Mua ngay
@@ -166,7 +235,7 @@ export default function Header() {
           <RightOutlined className="text-white" />
         </button>
 
-        {/* Dots indicator */}
+        {/* Dots */}
         <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex space-x-2">
           {banners.map((_, idx) => (
             <div
