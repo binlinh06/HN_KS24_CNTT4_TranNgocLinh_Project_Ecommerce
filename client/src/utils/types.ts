@@ -4,3 +4,8 @@ export interface Category {
   name: string;
   status: "active" | "inactive";
 }
+export interface Product {
+  id: number;
+  categoryId: number;
+  name: string;
+}

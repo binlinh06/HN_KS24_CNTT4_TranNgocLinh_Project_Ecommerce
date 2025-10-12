@@ -32,6 +32,12 @@
     }
   ],
   "categories": [
+        {
+      "id": 1,
+      "code": "DM001",
+      "name": "Quan ao",
+      "status": "inactive"
+    },
     {
       "id": 2,
       "code": "DM002",

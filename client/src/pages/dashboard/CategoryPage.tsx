@@ -20,6 +20,8 @@ import {
 import { Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "../../stores/stores";
+import { getAllProduct } from "../../stores/slices/ProductSlice";
+
 import {
   addCategory,
   getAllCategory,
@@ -30,15 +32,13 @@ import {
 const { Text } = Typography;
 const { Option } = Select;
 const { Search } = Input;
-const { categories, loading, error } = useSelector(
-  (state: any) => state.category
-);
-const { products } = useSelector((state: any) => state.product);
+
 export default function CategoryPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { categories, loading, error } = useSelector(
     (state: any) => state.category
   );
+  const { products } = useSelector((state: any) => state.product);
 
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -51,6 +51,7 @@ export default function CategoryPage() {
   // 🔹 Lấy dữ liệu khi load
   useEffect(() => {
     dispatch(getAllCategory());
+    dispatch(getAllProduct());
   }, [dispatch]);
 
   // 🔹 Khi categories thay đổi → cập nhật bảng
@@ -185,7 +186,6 @@ export default function CategoryPage() {
   };
 
   // ======== Xác nhận xoá ========
-  // ======== Xác nhận xoá ========
   const handleConfirmDelete = async () => {
     try {
       // 🔹 Kiểm tra xem danh mục có sản phẩm nào không
@@ -194,10 +194,7 @@ export default function CategoryPage() {
       );
 
       if (hasProducts) {
-        message.warning(
-          "Không thể xoá! Danh mục này đang có sản phẩm liên quan."
-        );
-        setIsDeleteModalOpen(false);
+        alert("Không thể xoá! Danh mục này đang có sản phẩm liên quan.");
         return;
       }
 
