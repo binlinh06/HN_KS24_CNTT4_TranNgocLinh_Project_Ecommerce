@@ -33,12 +33,6 @@
   ],
   "categories": [
     {
-      "id": 1,
-      "code": "DM001",
-      "name": "Quần áo",
-      "status": "active"
-    },
-    {
       "id": 2,
       "code": "DM002",
       "name": "Kính mắt",
@@ -79,6 +73,18 @@
       "code": "DM008",
       "name": "Điện thoại",
       "status": "inactive"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Áo thun",
+      "categoryId": 2
+    },
+    {
+      "id": 2,
+      "name": "Quần jean",
+      "categoryId": 3
     }
   ]
 }

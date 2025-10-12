@@ -11,7 +11,12 @@ import {
   message,
   Radio,
 } from "antd";
-import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import { Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "../../stores/stores";
@@ -25,7 +30,10 @@ import {
 const { Text } = Typography;
 const { Option } = Select;
 const { Search } = Input;
-
+const { categories, loading, error } = useSelector(
+  (state: any) => state.category
+);
+const { products } = useSelector((state: any) => state.product);
 export default function CategoryPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { categories, loading, error } = useSelector(
@@ -35,6 +43,8 @@ export default function CategoryPage() {
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const [form] = Form.useForm();
 
@@ -91,7 +101,7 @@ export default function CategoryPage() {
             type="text"
             danger
             icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record)}
+            onClick={() => openDeleteModal(record)}
           />
           <Button
             type="text"
@@ -147,22 +157,18 @@ export default function CategoryPage() {
 
       if (editingCategory) {
         const updatedCategory = { ...editingCategory, ...values };
-
         await dispatch(updateCategory(updatedCategory));
-        await dispatch(getAllCategory()); // refresh lại
         message.success("Cập nhật danh mục thành công!");
       } else {
-        // Thêm mới → Gọi API thật
         if (filteredData.some((d) => d.code === values.code)) {
           message.error("Mã danh mục đã tồn tại!");
           return;
         }
-
-        await dispatch(addCategory(values)); // 🟢 GỌI API POST tới db.json
-        await dispatch(getAllCategory()); // 🔁 Refresh lại list
+        await dispatch(addCategory(values));
         message.success("Thêm danh mục thành công!");
       }
 
+      await dispatch(getAllCategory());
       setIsModalOpen(false);
       form.resetFields();
       setEditingCategory(null);
@@ -171,20 +177,39 @@ export default function CategoryPage() {
       message.error("Lưu danh mục thất bại!");
     }
   };
-const handleDelete = async (id: number) => {
-  const confirmDelete = window.confirm("Bạn có chắc muốn xoá danh mục này?");
-  if (confirmDelete) {
+
+  // ======== Mở modal xoá ========
+  const openDeleteModal = (record: any) => {
+    setSelectedCategory(record);
+    setIsDeleteModalOpen(true);
+  };
+
+  // ======== Xác nhận xoá ========
+  // ======== Xác nhận xoá ========
+  const handleConfirmDelete = async () => {
     try {
-      await dispatch(deleteCategory(id));
+      // 🔹 Kiểm tra xem danh mục có sản phẩm nào không
+      const hasProducts = products.some(
+        (p: any) => p.categoryId === selectedCategory.id
+      );
+
+      if (hasProducts) {
+        message.warning(
+          "Không thể xoá! Danh mục này đang có sản phẩm liên quan."
+        );
+        setIsDeleteModalOpen(false);
+        return;
+      }
+
+      // 🔹 Nếu không có sản phẩm thì cho phép xoá
+      await dispatch(deleteCategory(selectedCategory.id));
       await dispatch(getAllCategory());
       message.success("Xoá danh mục thành công!");
-    } catch (error) {
-      console.log(error);
+      setIsDeleteModalOpen(false);
+    } catch {
       message.error("Xoá thất bại!");
     }
-  }
-};
-
+  };
 
   return (
     <>
@@ -222,7 +247,7 @@ const handleDelete = async (id: number) => {
         dataSource={filteredData}
         loading={loading}
         pagination={{ pageSize: 8, position: ["bottomCenter"] }}
-        rowKey="code"
+        rowKey="id"
       />
 
       {/* Modal (Thêm / Cập nhật) */}
@@ -288,6 +313,32 @@ const handleDelete = async (id: number) => {
             </Button>
           </div>
         </Form>
+      </Modal>
+
+      {/* Modal Xoá */}
+      <Modal
+        title={
+          <span className="text-lg font-semibold text-red-600">
+            <ExclamationCircleOutlined className="mr-2 text-red-500" />
+            Xác nhận xoá
+          </span>
+        }
+        open={isDeleteModalOpen}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        footer={null}
+        centered
+      >
+        <p>
+          Bạn có chắc chắn muốn xoá danh mục <b>{selectedCategory?.name}</b>{" "}
+          không?
+        </p>
+
+        <div className="flex justify-end gap-2 mt-4">
+          <Button onClick={() => setIsDeleteModalOpen(false)}>Huỷ</Button>
+          <Button danger type="primary" onClick={handleConfirmDelete}>
+            Xoá
+          </Button>
+        </div>
       </Modal>
     </>
   );
