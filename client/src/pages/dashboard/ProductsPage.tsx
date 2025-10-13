@@ -1,83 +1,40 @@
-import React, { useState } from "react";
-import { Table, Button, Tag, Space, Select, Input } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Tag, Space, Select, Input, message } from "antd";
 import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch } from "../../stores/stores";
+import { getAllCategory } from "../../stores/slices/CategorySlice";
+import { getAllProduct } from "../../stores/slices/ProductSlice";
 
 const { Text } = Typography;
 const { Option } = Select;
 const { Search } = Input;
 
-const data = [
-  {
-    code: "SP001",
-    name: "Iphone 12 Pro",
-    price: "12.000.000",
-    quantity: 10,
-    discount: 0,
-    status: "active",
-  },
-  {
-    code: "SP002",
-    name: "Samsung Galaxy X20",
-    price: "21.000.000",
-    quantity: 100,
-    discount: 5,
-    status: "inactive",
-  },
-  {
-    code: "SP003",
-    name: "Phone 8 Plus",
-    price: "5.000.000",
-    quantity: 10,
-    discount: 0,
-    status: "active",
-  },
-  {
-    code: "SP004",
-    name: "Iphone 14 Pro max",
-    price: "25.000.000",
-    quantity: 20,
-    discount: 2,
-    status: "inactive",
-  },
-  {
-    code: "SP005",
-    name: "Oppo X3",
-    price: "2.000.000",
-    quantity: 10,
-    discount: 5,
-    status: "inactive",
-  },
-  {
-    code: "SP006",
-    name: "Iphone 16",
-    price: "20.000.000",
-    quantity: 20,
-    discount: 3,
-    status: "inactive",
-  },
-  {
-    code: "SP007",
-    name: "Iphone 7 Plus",
-    price: "4.000.000",
-    quantity: 10,
-    discount: 4,
-    status: "active",
-  },
-  {
-    code: "SP008",
-    name: "Samsung S20 Ultra",
-    price: "30.000.000",
-    quantity: 15,
-    discount: 2,
-    status: "inactive",
-  },
-];
-
 export default function ProductsPage() {
-  const [filteredData, setFilteredData] = useState(data);
+  const dispatch = useDispatch<AppDispatch>();
+  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const { products, loading, error } = useSelector(
+    (state: any) => state.product
+  );
+  const { categories } = useSelector((state: any) => state.category);
 
+  // 🔹 Lấy dữ liệu khi load
+  useEffect(() => {
+    dispatch(getAllCategory());
+    dispatch(getAllProduct());
+  }, [dispatch]);
+
+  // 🔹 Khi products thay đổi → cập nhật bảng
+  useEffect(() => {
+    setFilteredData(products);
+  }, [products]);
+  // 🔹 Hiển thị lỗi nếu có
+  useEffect(() => {
+    if (error) message.error(error);
+  }, [error]);
   const columns = [
     {
       title: <span className="text-gray-700">Mã sản phẩm</span>,
@@ -95,7 +52,12 @@ export default function ProductsPage() {
       title: <span className="text-gray-700">Giá</span>,
       dataIndex: "price",
       sorter: (a: any, b: any) => a.price.localeCompare(b.price),
-      render: (text: string) => <Text strong>{text}{"đ"}</Text>,
+      render: (text: string) => (
+        <Text strong>
+          {text}
+          {"đ"}
+        </Text>
+      ),
     },
     {
       title: <span className="text-gray-700">Số lượng</span>,
@@ -143,23 +105,36 @@ export default function ProductsPage() {
     },
   ];
 
+  // ======== Lọc theo trạng thái ========
   const handleStatusChange = (value: string) => {
     setStatusFilter(value);
     if (value === "all") {
-      setFilteredData(data);
+      setFilteredData(products);
     } else {
-      setFilteredData(data.filter((d) => d.status === value));
+      setFilteredData(products.filter((d: any) => d.status === value));
+    }
+  };
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value);
+    if (value === "all") {
+      setFilteredData(products);
+    } else {
+      const filtered = products.filter(
+        (p: any) => p.categoryId === Number(value)
+      );
+      setFilteredData(filtered);
     }
   };
 
+  // ======== Tìm kiếm ========
   const onSearch = (value: string) => {
-    const searchData = data.filter((d) =>
+    const searchData = products.filter((d: any) =>
       d.name.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredData(
       statusFilter === "all"
         ? searchData
-        : searchData.filter((d) => d.status === statusFilter)
+        : searchData.filter((d: any) => d.status === statusFilter)
     );
   };
 
@@ -175,24 +150,32 @@ export default function ProductsPage() {
 
       {/* Hàng 2: Select + Search */}
       <div className="flex justify-end items-center gap-2 mb-4">
+        {/* Lọc theo danh mục */}
         <Select
           defaultValue="all"
-          className="w-45"
+          className="w-48"
+          onChange={handleCategoryChange}
+        >
+          <Option value="all">Tất cả danh mục</Option>
+          {categories.map((c: any) => (
+            <Option key={c.id} value={c.id}>
+              {c.name}
+            </Option>
+          ))}
+        </Select>
+
+        {/* Lọc theo trạng thái */}
+        <Select
+          defaultValue="all"
+          className="w-48"
           onChange={handleStatusChange}
         >
-          <Option value="all">Lọc theo danh mục</Option>
+          <Option value="all">Tất cả trạng thái</Option>
           <Option value="active">Đang hoạt động</Option>
           <Option value="inactive">Ngừng hoạt động</Option>
         </Select>
-        <Select
-          defaultValue="all"
-          className="w-45"
-          onChange={handleStatusChange}
-        >
-          <Option value="all">Lọc theo trạng thái</Option>
-          <Option value="active">Đang hoạt động</Option>
-          <Option value="inactive">Ngừng hoạt động</Option>
-        </Select>
+
+        {/* Ô tìm kiếm */}
         <Search
           placeholder="Tìm kiếm sản phẩm theo tên"
           onSearch={onSearch}
@@ -204,7 +187,9 @@ export default function ProductsPage() {
       <Table
         columns={columns}
         dataSource={filteredData}
+        loading={loading}
         pagination={{ pageSize: 8, position: ["bottomCenter"] }}
+        rowKey="id"
       />
     </>
   );

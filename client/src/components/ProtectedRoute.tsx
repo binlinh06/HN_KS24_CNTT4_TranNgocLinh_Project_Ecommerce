@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, type JSX } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
 
@@ -36,7 +36,8 @@ export default function ProtectedRoute({
         } else {
           setIsAuthorized(false);
         }
-      } catch (err) {
+      } catch (error) {
+        console.log(error);
         setIsAuthorized(false);
       } finally {
         setIsChecking(false);

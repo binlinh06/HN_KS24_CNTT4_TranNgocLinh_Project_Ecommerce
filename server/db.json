@@ -32,7 +32,7 @@
     }
   ],
   "categories": [
-        {
+    {
       "id": 1,
       "code": "DM001",
       "name": "Quan ao",
@@ -79,18 +79,94 @@
       "code": "DM008",
       "name": "Điện thoại",
       "status": "inactive"
+    },
+    {
+      "code": "d",
+      "name": "d",
+      "status": "active",
+      "id": 9
+    },
+    {
+      "code": "dsa",
+      "name": "dá",
+      "status": "active",
+      "id": 10
     }
   ],
   "products": [
     {
       "id": 1,
-      "name": "Áo thun",
-      "categoryId": 2
+      "code": "SP001",
+      "name": "Iphone 12 Pro",
+      "price": "12.000.000",
+      "quantity": 10,
+      "discount": 0,
+      "status": "active"
     },
     {
       "id": 2,
-      "name": "Quần jean",
+      "code": "SP002",
+      "name": "Samsung Galaxy X20",
+      "price": "21.000.000",
+      "quantity": 100,
+      "discount": 5,
+      "status": "inactive",
+      "categoryId": 2
+    },
+    {
+      "id": 3,
+      "code": "SP003",
+      "name": "Phone 8 Plus",
+      "price": "5.000.000",
+      "quantity": 10,
+      "discount": 0,
+      "status": "active",
       "categoryId": 3
+    },
+    {
+      "id": 4,
+      "code": "SP004",
+      "name": "Iphone 14 Pro max",
+      "price": "25.000.000",
+      "quantity": 20,
+      "discount": 2,
+      "status": "inactive"
+    },
+    {
+      "id": 5,
+      "code": "SP005",
+      "name": "Oppo X3",
+      "price": "2.000.000",
+      "quantity": 10,
+      "discount": 5,
+      "status": "inactive"
+    },
+    {
+      "id": 6,
+      "code": "SP006",
+      "name": "Iphone 16",
+      "price": "20.000.000",
+      "quantity": 20,
+      "discount": 3,
+      "status": "inactive"
+    },
+    {
+      "id": 7,
+      "code": "SP007",
+      "name": "Iphone 7 Plus",
+      "price": "4.000.000",
+      "quantity": 10,
+      "discount": 4,
+      "status": "active"
+    },
+    {
+      "id": 8,
+      "code": "SP008",
+      "name": "Samsung S20 Ultra",
+      "price": "30.000.000",
+      "quantity": 15,
+      "discount": 2,
+      "status": "inactive"
     }
   ]
 }

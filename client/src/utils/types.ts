@@ -6,6 +6,11 @@ export interface Category {
 }
 export interface Product {
   id: number;
-  categoryId: number;
+  code: string;
   name: string;
+  price:string;
+  quantity:number;
+  discount:number;
+  status: "active" | "inactive";
+  categoryId: number;
 }

@@ -159,14 +159,10 @@ export default function CategoryPage() {
       if (editingCategory) {
         const updatedCategory = { ...editingCategory, ...values };
         await dispatch(updateCategory(updatedCategory));
-        message.success("Cập nhật danh mục thành công!");
+        alert("Cập nhật danh mục thành công!");
       } else {
-        if (filteredData.some((d) => d.code === values.code)) {
-          message.error("Mã danh mục đã tồn tại!");
-          return;
-        }
         await dispatch(addCategory(values));
-        message.success("Thêm danh mục thành công!");
+        alert("Thêm danh mục thành công!");
       }
 
       await dispatch(getAllCategory());
@@ -175,7 +171,7 @@ export default function CategoryPage() {
       setEditingCategory(null);
     } catch (err) {
       console.error(err);
-      message.error("Lưu danh mục thất bại!");
+      alert("Lưu danh mục thất bại!");
     }
   };
 
@@ -201,10 +197,10 @@ export default function CategoryPage() {
       // 🔹 Nếu không có sản phẩm thì cho phép xoá
       await dispatch(deleteCategory(selectedCategory.id));
       await dispatch(getAllCategory());
-      message.success("Xoá danh mục thành công!");
+      alert("Xoá danh mục thành công!");
       setIsDeleteModalOpen(false);
     } catch {
-      message.error("Xoá thất bại!");
+      alert("Xoá thất bại!");
     }
   };
 
@@ -267,7 +263,25 @@ export default function CategoryPage() {
           <Form.Item
             name="code"
             label="Mã danh mục"
-            rules={[{ required: true, message: "Vui lòng nhập mã danh mục" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập mã danh mục" },
+              {
+                validator: (_, value) => {
+                  if (!value) return Promise.resolve();
+
+                  // Nếu đang thêm mới và mã đã tồn tại
+                  const isDuplicate =
+                    !editingCategory &&
+                    filteredData.some((d) => d.code === value.trim());
+
+                  if (isDuplicate) {
+                    return Promise.reject(new Error("Mã danh mục đã tồn tại!"));
+                  }
+
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
             <Input
               placeholder="Nhập mã danh mục"
