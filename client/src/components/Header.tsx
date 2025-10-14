@@ -10,11 +10,17 @@ import {
   CustomerServiceOutlined,
   DesktopOutlined,
   ConsoleSqlOutlined,
-  LeftOutlined,
-  RightOutlined,
 } from "@ant-design/icons";
 import { Dropdown, Menu, message, Avatar } from "antd";
 import { useNavigate } from "react-router-dom";
+
+// 🌀 Import Swiper
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -119,20 +125,6 @@ export default function Header() {
     },
   ];
 
-  const [current, setCurrent] = useState(0);
-
-  // ✅ Auto đổi banner mỗi 3 giây
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % banners.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [banners.length]);
-
-  const nextSlide = () => setCurrent((prev) => (prev + 1) % banners.length);
-  const prevSlide = () =>
-    setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
-
   return (
     <header className="w-full bg-white shadow-sm">
       {/* Top Navigation */}
@@ -176,76 +168,67 @@ export default function Header() {
       {/* Submenu */}
       <div className="bg-[#2E2E2E] text-white text-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          {[{ icon: <MobileOutlined />, text: "Điện thoại" },
+          {[
+            { icon: <MobileOutlined />, text: "Điện thoại" },
             { icon: <LaptopOutlined />, text: "Laptop" },
             { icon: <DesktopOutlined />, text: "Đồng hồ thông minh" },
             { icon: <CameraOutlined />, text: "Cameras" },
             { icon: <CustomerServiceOutlined />, text: "Tai nghe" },
-            { icon: <ConsoleSqlOutlined />, text: "Gaming" }].map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center px-5 py-2 space-x-2 hover:bg-gray-700 cursor-pointer transition"
-              >
-                {item.icon}
-                <span>{item.text}</span>
-              </div>
+            { icon: <ConsoleSqlOutlined />, text: "Gaming" },
+          ].map((item, index) => (
+            <div
+              key={index}
+              className="flex items-center px-5 py-2 space-x-2 hover:bg-gray-700 cursor-pointer transition"
+            >
+              {item.icon}
+              <span>{item.text}</span>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* ✅ Banner Carousel */}
-      <div
-        className="relative overflow-hidden text-white transition-all duration-700"
-        style={{ backgroundColor: banners[current].bg }}
-      >
-        <div className="max-w-7xl mx-auto flex justify-between items-center py-20 px-6 transition-all duration-700">
-          {/* Left Content */}
-          <div key={current} className="max-w-lg transition-opacity duration-700">
-            <p className="text-gray-400 mb-2">{banners[current].subtitle}</p>
-            <h1 className="text-6xl font-light mb-4 leading-tight">
-              {banners[current].title}
-            </h1>
-            <p className="text-gray-400 mb-6">{banners[current].description}</p>
-            <button className="border border-white px-6 py-2 rounded-md hover:bg-white hover:text-black transition">
-              Mua ngay
-            </button>
-          </div>
-
-          {/* Right Image */}
-          <div className="flex-shrink-0">
-            <img
-              src={banners[current].image}
-              alt="banner"
-              className="w-[400px] object-contain h-80 transition-all duration-700"
-            />
-          </div>
-        </div>
-
-        {/* Nút chuyển tay */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 rounded-full hover:bg-black/50 transition"
+      {/* ✅ Banner Swiper */}
+      <div className="relative text-white">
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay, EffectFade]}
+          navigation
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          effect="fade"
+          loop
+          className="w-full"
         >
-          <LeftOutlined className="text-white" />
-        </button>
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 rounded-full hover:bg-black/50 transition"
-        >
-          <RightOutlined className="text-white" />
-        </button>
+          {banners.map((banner, index) => (
+            <SwiperSlide key={index}>
+              {/* Toàn màn hình có background màu */}
+              <div className="w-full" style={{ backgroundColor: banner.bg }}>
+                {/* Giữ nội dung trong khung giữa */}
+                <div className="max-w-7xl mx-auto flex justify-between items-center py-20 px-6">
+                  {/* Left Content */}
+                  <div className="max-w-lg">
+                    <p className="text-gray-400 mb-2">{banner.subtitle}</p>
+                    <h1 className="text-6xl font-light mb-4 leading-tight">
+                      {banner.title}
+                    </h1>
+                    <p className="text-gray-400 mb-6">{banner.description}</p>
+                    <button className="border border-white px-6 py-2 rounded-md hover:bg-white hover:text-black transition">
+                      Mua ngay
+                    </button>
+                  </div>
 
-        {/* Dots */}
-        <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {banners.map((_, idx) => (
-            <div
-              key={idx}
-              className={`w-3 h-3 rounded-full ${
-                current === idx ? "bg-white" : "bg-white/40"
-              }`}
-            />
+                  {/* Right Image */}
+                  <div className="flex-shrink-0">
+                    <img
+                      src={banner.image}
+                      alt="banner"
+                      className="w-[400px] h-80 object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
       </div>
     </header>
   );
