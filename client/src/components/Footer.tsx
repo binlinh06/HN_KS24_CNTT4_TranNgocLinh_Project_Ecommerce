@@ -31,7 +31,7 @@ export default function Footer() {
         </div>
         <div className="flex-shrink-0">
           <img
-            src="https://res.cloudinary.com/dcti4xpqa/image/upload/v1759818772/image_7_yaxcvq.png"
+            src="https://res.cloudinary.com/dcti4xpqa/image/upload/v1760438851/4a26738ead31cbe399461c13312a3bd013818a4a_szihwh.png"
             alt="Iphone"
             className="w-[400px] object-contain h-80"
           />
