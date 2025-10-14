@@ -5,13 +5,13 @@ import type { Category } from "../../utils/types";
 
 const BASE_URL = API_GETALL_CATEGORY;
 
-// 🔹 Lấy tất cả danh mục
+//Lấy tất cả danh mục
 export const getAllCategory = createAsyncThunk("category/getAll", async () => {
   const res = await axios.get(BASE_URL);
   return res.data;
 });
 
-// 🔹 Thêm mới danh mục
+//Thêm mới danh mục
 export const addCategory = createAsyncThunk(
   "category/add",
   async (new_category: Category) => {
@@ -20,7 +20,7 @@ export const addCategory = createAsyncThunk(
   }
 );
 
-// 🔹 Cập nhật danh mục
+//Cập nhật danh mục
 export const updateCategory = createAsyncThunk(
   "category/update",
   async (updatedCategory: Category) => {
@@ -29,7 +29,7 @@ export const updateCategory = createAsyncThunk(
   }
 );
 
-// 🔹 Xóa danh mục
+//Xóa danh mục
 export const deleteCategory = createAsyncThunk(
   "category/delete",
   async (id: number) => {
@@ -48,7 +48,7 @@ const CategorySlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // 🟢 GET ALL
+      //GET ALL
       .addCase(getAllCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -62,7 +62,7 @@ const CategorySlice = createSlice({
         state.error = action.error.message ?? "Không thể tải danh mục";
       })
 
-      // 🟢 ADD
+      //ADD
       .addCase(addCategory.pending, (state) => {
         state.loading = true;
       })
@@ -75,7 +75,7 @@ const CategorySlice = createSlice({
         state.error = action.error.message ?? "Thêm danh mục thất bại";
       })
 
-      // 🟢 UPDATE
+      //UPDATE
       .addCase(updateCategory.pending, (state) => {
         state.loading = true;
       })
@@ -91,7 +91,7 @@ const CategorySlice = createSlice({
         state.error = action.error.message ?? "Cập nhật danh mục thất bại";
       })
 
-      // 🟢 DELETE
+      //DELETE
       .addCase(deleteCategory.pending, (state) => {
         state.loading = true;
       })

@@ -35,8 +35,8 @@
     {
       "id": 1,
       "code": "DM001",
-      "name": "Quan ao",
-      "status": "inactive"
+      "name": "Quần áo",
+      "status": "active"
     },
     {
       "id": 2,
@@ -82,15 +82,9 @@
     },
     {
       "code": "d",
-      "name": "d",
+      "name": "dddd",
       "status": "active",
       "id": 9
-    },
-    {
-      "code": "dsa",
-      "name": "dá",
-      "status": "active",
-      "id": 10
     }
   ],
   "products": [

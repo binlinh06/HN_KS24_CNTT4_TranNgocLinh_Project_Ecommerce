@@ -22,7 +22,7 @@ export default function AdminLayout() {
 
   const selectedKey = pathKeyMap[location.pathname] || "dashboard";
 
-  // ✅ Menu items theo format mới
+  //Menu items theo format mới
   const menuItems = [
     {
       key: "dashboard",
@@ -47,8 +47,6 @@ export default function AdminLayout() {
         <div className="p-4 font-bold flex items-center gap-2 text-lg">
           <FireTwoTone twoToneColor="#eb2f96" /> Ecommerce
         </div>
-
-        {/* ✅ Dùng items thay vì children */}
         <Menu mode="inline" selectedKeys={[selectedKey]} items={menuItems} />
       </Sider>
 

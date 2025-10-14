@@ -11,24 +11,6 @@ export const getAllProduct = createAsyncThunk("product/getAll", async () => {
   return res.data;
 });
 
-// 🟢 Thêm mới sản phẩm
-export const addProduct = createAsyncThunk(
-  "product/add",
-  async (new_product: Product) => {
-    const res = await axios.post(BASE_URL, new_product);
-    return res.data;
-  }
-);
-
-// 🟢 Cập nhật sản phẩm
-export const updateProduct = createAsyncThunk(
-  "product/update",
-  async (updatedProduct: Product) => {
-    const res = await axios.put(`${BASE_URL}/${updatedProduct.id}`, updatedProduct);
-    return res.data;
-  }
-);
-
 // 🟢 Xóa sản phẩm
 export const deleteProduct = createAsyncThunk(
   "product/delete",
@@ -60,35 +42,6 @@ const ProductSlice = createSlice({
       .addCase(getAllProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? "Không thể tải sản phẩm";
-      })
-
-      // ADD
-      .addCase(addProduct.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(addProduct.fulfilled, (state, action) => {
-        state.loading = false;
-        state.products.push(action.payload);
-      })
-      .addCase(addProduct.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message ?? "Thêm sản phẩm thất bại";
-      })
-
-      // UPDATE
-      .addCase(updateProduct.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(updateProduct.fulfilled, (state, action) => {
-        state.loading = false;
-        const index = state.products.findIndex(
-          (item) => item.id === action.payload.id
-        );
-        if (index !== -1) state.products[index] = action.payload;
-      })
-      .addCase(updateProduct.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message ?? "Cập nhật sản phẩm thất bại";
       })
 
       // DELETE

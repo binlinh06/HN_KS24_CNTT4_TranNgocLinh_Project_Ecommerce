@@ -13,8 +13,6 @@ import {
 } from "@ant-design/icons";
 import { Dropdown, Menu, message, Avatar } from "antd";
 import { useNavigate } from "react-router-dom";
-
-// 🌀 Import Swiper
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules";
 import "swiper/css";
@@ -26,7 +24,7 @@ export default function Header() {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
 
-  // ✅ Lấy user từ localStorage khi load trang
+  //Lấy user từ localStorage khi load trang
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -34,7 +32,7 @@ export default function Header() {
     }
   }, []);
 
-  // ✅ Hàm đăng xuất
+  //Hàm đăng xuất
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
@@ -42,12 +40,12 @@ export default function Header() {
     navigate("/login");
   };
 
-  // ✅ Hàm chuyển sang trang login
+  //Hàm chuyển sang trang login
   const handleLogin = () => {
     navigate("/login");
   };
 
-  // ✅ Menu tùy theo trạng thái đăng nhập
+  //Menu tùy theo trạng thái đăng nhập
   const menu = (
     <Menu
       items={
@@ -155,7 +153,7 @@ export default function Header() {
           <HeartOutlined />
           <ShoppingCartOutlined />
 
-          {/* ✅ Avatar + Menu động */}
+          {/*Avatar + Menu động */}
           <Dropdown overlay={menu} placement="bottomRight" trigger={["click"]}>
             <Avatar
               icon={<UserOutlined />}
@@ -187,7 +185,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* ✅ Banner Swiper */}
+      {/*Banner Swiper */}
       <div className="relative text-white">
         <Swiper
           modules={[Navigation, Pagination, Autoplay, EffectFade]}

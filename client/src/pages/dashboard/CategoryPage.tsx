@@ -39,7 +39,6 @@ export default function CategoryPage() {
     (state: any) => state.category
   );
   const { products } = useSelector((state: any) => state.product);
-
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,18 +47,18 @@ export default function CategoryPage() {
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const [form] = Form.useForm();
 
-  // 🔹 Lấy dữ liệu khi load
+  //Lấy dữ liệu khi load
   useEffect(() => {
     dispatch(getAllCategory());
     dispatch(getAllProduct());
   }, [dispatch]);
 
-  // 🔹 Khi categories thay đổi → cập nhật bảng
+  //Khi categories thay đổi → cập nhật bảng
   useEffect(() => {
     setFilteredData(categories);
   }, [categories]);
 
-  // 🔹 Hiển thị lỗi nếu có
+  //Hiển thị lỗi nếu có
   useEffect(() => {
     if (error) message.error(error);
   }, [error]);
@@ -184,7 +183,7 @@ export default function CategoryPage() {
   // ======== Xác nhận xoá ========
   const handleConfirmDelete = async () => {
     try {
-      // 🔹 Kiểm tra xem danh mục có sản phẩm nào không
+      //Kiểm tra xem danh mục có sản phẩm nào không
       const hasProducts = products.some(
         (p: any) => p.categoryId === selectedCategory.id
       );
@@ -194,7 +193,7 @@ export default function CategoryPage() {
         return;
       }
 
-      // 🔹 Nếu không có sản phẩm thì cho phép xoá
+      //Nếu không có sản phẩm thì cho phép xoá
       await dispatch(deleteCategory(selectedCategory.id));
       await dispatch(getAllCategory());
       alert("Xoá danh mục thành công!");
@@ -234,15 +233,6 @@ export default function CategoryPage() {
         />
       </div>
 
-      {/* Bảng */}
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        loading={loading}
-        pagination={{ pageSize: 8, position: ["bottomCenter"] }}
-        rowKey="id"
-      />
-
       {/* Modal (Thêm / Cập nhật) */}
       <Modal
         title={
@@ -268,7 +258,6 @@ export default function CategoryPage() {
               {
                 validator: (_, value) => {
                   if (!value) return Promise.resolve();
-
                   // Nếu đang thêm mới và mã đã tồn tại
                   const isDuplicate =
                     !editingCategory &&
@@ -340,7 +329,7 @@ export default function CategoryPage() {
         centered
       >
         <p>
-          Bạn có chắc chắn muốn xoá danh mục <b>{selectedCategory?.name}</b>{" "}
+          Bạn có chắc chắn muốn xoá sản phẩm <b>{selectedCategory?.name}</b>{" "}
           không?
         </p>
 
@@ -351,6 +340,15 @@ export default function CategoryPage() {
           </Button>
         </div>
       </Modal>
+
+      {/* Bảng */}
+      <Table
+        columns={columns}
+        dataSource={filteredData}
+        loading={loading}
+        pagination={{ pageSize: 5, position: ["bottomCenter"] }}
+        rowKey="id"
+      />
     </>
   );
 }

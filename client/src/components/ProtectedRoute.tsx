@@ -24,7 +24,6 @@ export default function ProtectedRoute({
       const user = JSON.parse(userData);
 
       try {
-        // Kiểm tra user có tồn tại trong db.json không
         const res = await axios.get(`http://localhost:8080/users/${user.id}`);
 
         if (res.status === 200) {

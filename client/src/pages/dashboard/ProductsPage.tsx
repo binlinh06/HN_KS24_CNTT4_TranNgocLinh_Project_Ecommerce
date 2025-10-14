@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Tag, Space, Select, Input, message } from "antd";
-import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Table, Button, Tag, Space, Select, Input, message, Modal } from "antd";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import { Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "../../stores/stores";
 import { getAllCategory } from "../../stores/slices/CategorySlice";
-import { getAllProduct } from "../../stores/slices/ProductSlice";
+import { deleteProduct, getAllProduct } from "../../stores/slices/ProductSlice";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -15,26 +20,30 @@ export default function ProductsPage() {
   const dispatch = useDispatch<AppDispatch>();
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const { products, loading, error } = useSelector(
     (state: any) => state.product
   );
   const { categories } = useSelector((state: any) => state.category);
 
-  // 🔹 Lấy dữ liệu khi load
+  //Lấy dữ liệu khi load
   useEffect(() => {
     dispatch(getAllCategory());
     dispatch(getAllProduct());
   }, [dispatch]);
 
-  // 🔹 Khi products thay đổi → cập nhật bảng
+  //Khi products thay đổi → cập nhật bảng
   useEffect(() => {
     setFilteredData(products);
   }, [products]);
-  // 🔹 Hiển thị lỗi nếu có
+
+  //Hiển thị lỗi nếu có
   useEffect(() => {
     if (error) message.error(error);
   }, [error]);
+
   const columns = [
     {
       title: <span className="text-gray-700">Mã sản phẩm</span>,
@@ -92,9 +101,14 @@ export default function ProductsPage() {
     },
     {
       title: <span className="text-gray-700">Chức năng</span>,
-      render: () => (
+      render: (record: any) => (
         <Space>
-          <Button type="text" danger icon={<DeleteOutlined />} />
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => openDeleteModal(record)}
+          />
           <Button
             type="text"
             style={{ color: "#facc15" }}
@@ -114,6 +128,7 @@ export default function ProductsPage() {
       setFilteredData(products.filter((d: any) => d.status === value));
     }
   };
+
   const handleCategoryChange = (value: string) => {
     setCategoryFilter(value);
     if (value === "all") {
@@ -138,6 +153,23 @@ export default function ProductsPage() {
     );
   };
 
+  // ======== Mở modal xoá ========
+  const openDeleteModal = (record: any) => {
+    setSelectedProduct(record);
+    setIsDeleteModalOpen(true);
+  };
+
+  // ======== Xác nhận xoá ========
+  const handleConfirmDelete = async () => {
+    try {
+      await dispatch(deleteProduct(selectedProduct.id));
+      await dispatch(getAllProduct());
+      alert("Xoá danh mục thành công!");
+      setIsDeleteModalOpen(false);
+    } catch {
+      alert("Xoá thất bại!");
+    }
+  };
   return (
     <>
       {/* Hàng 1: Tiêu đề + nút thêm */}
@@ -183,12 +215,38 @@ export default function ProductsPage() {
         />
       </div>
 
+      {/* Modal Xoá */}
+      <Modal
+        title={
+          <span className="text-lg font-semibold text-red-600">
+            <ExclamationCircleOutlined className="mr-2 text-red-500" />
+            Xác nhận xoá
+          </span>
+        }
+        open={isDeleteModalOpen}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        footer={null}
+        centered
+      >
+        <p>
+          Bạn có chắc chắn muốn xoá danh mục <b>{selectedProduct?.name}</b>{" "}
+          không?
+        </p>
+
+        <div className="flex justify-end gap-2 mt-4">
+          <Button onClick={() => setIsDeleteModalOpen(false)}>Huỷ</Button>
+          <Button danger type="primary" onClick={handleConfirmDelete}>
+            Xoá
+          </Button>
+        </div>
+      </Modal>
+
       {/* Table */}
       <Table
         columns={columns}
         dataSource={filteredData}
         loading={loading}
-        pagination={{ pageSize: 8, position: ["bottomCenter"] }}
+        pagination={{ pageSize: 5, position: ["bottomCenter"] }}
         rowKey="id"
       />
     </>
