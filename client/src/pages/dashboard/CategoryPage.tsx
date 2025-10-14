@@ -266,7 +266,6 @@ export default function CategoryPage() {
                   if (isDuplicate) {
                     return Promise.reject(new Error("Mã danh mục đã tồn tại!"));
                   }
-
                   return Promise.resolve();
                 },
               },
@@ -281,7 +280,23 @@ export default function CategoryPage() {
           <Form.Item
             name="name"
             label="Tên danh mục"
-            rules={[{ required: true, message: "Vui lòng nhập tên danh mục" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập tên danh mục" },
+              {
+                validator: (_, value) => {
+                  if (!value) return Promise.resolve();
+                  // Nếu đang thêm mới và ten đã tồn tại
+                  const isDuplicate =
+                    !editingCategory &&
+                    filteredData.some((d) => d.name === value.trim());
+
+                  if (isDuplicate) {
+                    return Promise.reject(new Error("Mã danh mục đã tồn tại!"));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
             <Input placeholder="Nhập tên danh mục" />
           </Form.Item>
